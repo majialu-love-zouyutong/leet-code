@@ -140,9 +140,7 @@ var minSubArrayLen = function (target, nums) {
  * @return {number[][]}
  */
 var generateMatrix = function (n) {
-  const result = Array.from({ length: n }, () =>
-    new Array(n).fill(0)
-  );
+  const result = Array.from({ length: n }, () => new Array(n).fill(0));
   let num = 1;
   let rowBegin = 0,
     rowEnd = n - 1;
@@ -151,30 +149,195 @@ var generateMatrix = function (n) {
 
   while (rowBegin <= rowEnd && colBegin <= colEnd) {
     // 向右
-    for (let j = colBegin; j <= colEnd; j++)
-      result[rowBegin][j] = num++;
+    for (let j = colBegin; j <= colEnd; j++) result[rowBegin][j] = num++;
     rowBegin++;
 
     // 向下
-    for (let i = rowBegin; i <= rowEnd; i++)
-      result[i][colEnd] = num++;
+    for (let i = rowBegin; i <= rowEnd; i++) result[i][colEnd] = num++;
     colEnd--;
 
     if (rowBegin <= rowEnd) {
       // 向左
-      for (let j = colEnd; j >= colBegin; j--)
-        result[rowEnd][j] = num++;
+      for (let j = colEnd; j >= colBegin; j--) result[rowEnd][j] = num++;
       rowEnd--;
     }
 
     if (colBegin <= colEnd) {
       // 向上
-      for (let i = rowEnd; i >= rowBegin; i--)
-        result[i][colBegin] = num++;
+      for (let i = rowEnd; i >= rowBegin; i--) result[i][colBegin] = num++;
       colBegin++;
     }
   }
 
   return result;
+};
+```
+
+# 链表
+
+## 移除链表元素
+
+> leetcode 203
+
+```js
+// @lc code=start
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
+ */
+/**
+ * @param {ListNode} head
+ * @param {number} val
+ * @return {ListNode}
+ */
+var removeElements = function (head, val) {
+  let dummy = new ListNode(0, head); // 创建虚拟头节点
+  let cur = dummy; // 初始化当前节点为虚拟头节点
+  while (cur.next) {
+    if (cur.next.val === val) {
+      // 删除节点
+      cur.next = cur.next.next;
+    } else {
+      // 继续遍历
+      cur = cur.next;
+    }
+  }
+  return dummy.next;
+};
+```
+
+## 设计链表
+
+> leetcode707
+> 重点：要先设计一个`ListNode`类，再设计一个`MyLinkedList`类，实现`MyLinkedList`类中的方法。
+> **虚拟头节点**
+
+```js
+/*
+ * @lc app=leetcode.cn id=707 lang=javascript
+ *
+ * [707] 设计链表
+ */
+
+// @lc code=start
+
+var ListNode = function (val, next) {
+  this.val = val;
+  this.next = next;
+};
+var MyLinkedList = function () {
+  this.size = 0;
+  this.dummyHead = new ListNode(0);
+};
+
+/**
+ * @param {number} index
+ * @return {number}
+ */
+MyLinkedList.prototype.get = function (index) {
+  if (index < 0 || index >= this.size) return -1;
+  let cur = this.dummyHead;
+  while (index-- >= 0) cur = cur.next;
+  return cur.val;
+};
+
+/**
+ * @param {number} val
+ * @return {void}
+ */
+MyLinkedList.prototype.addAtHead = function (val) {
+  this.addAtIndex(0, val);
+};
+
+/**
+ * @param {number} val
+ * @return {void}
+ */
+MyLinkedList.prototype.addAtTail = function (val) {
+  this.addAtIndex(this.size, val);
+};
+
+/**
+ * @param {number} index
+ * @param {number} val
+ * @return {void}
+ */
+MyLinkedList.prototype.addAtIndex = function (index, val) {
+  if (index < 0 || index > this.size) return;
+  let node = new ListNode(val);
+  let cur = this.dummyHead;
+  while (index-- > 0) cur = cur.next;
+  node.next = cur.next;
+  cur.next = node;
+  this.size++;
+};
+
+/**
+ * @param {number} index
+ * @return {void}
+ */
+MyLinkedList.prototype.deleteAtIndex = function (index) {
+  if (index < 0 || index >= this.size) return;
+  let cur = this.dummyHead;
+  while (index-- > 0) cur = cur.next;
+  cur.next = cur.next.next;
+  this.size--;
+};
+
+/**
+ * Your MyLinkedList object will be instantiated and called as such:
+ * var obj = new MyLinkedList()
+ * var param_1 = obj.get(index)
+ * obj.addAtHead(val)
+ * obj.addAtTail(val)
+ * obj.addAtIndex(index,val)
+ * obj.deleteAtIndex(index)
+ */
+```
+
+## 翻转链表
+
+> leetcode 206
+> 递归 | 迭代
+
+```js
+// @lc code=start
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
+ */
+/**
+ * @param {ListNode} head
+ * @return {ListNode}
+ */
+var reverseList = function (head) {
+  // 递归实现
+  if (!head || !head.next) return head;
+  const newHead = reverseList(head.next);
+  head.next.next = head;
+  head.next = null;
+  return newHead;
+};
+// @lc code=end
+```
+
+```js
+var reverseList = function (head) {
+  if (!head) return head; // 迭代实现 - 双指针
+  let pre = null;
+  let cur = head;
+  while (cur) {
+    let next = cur.next;
+    cur.next = pre;
+    pre = cur;
+    cur = next;
+  }
+  return pre;
 };
 ```
