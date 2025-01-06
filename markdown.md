@@ -341,3 +341,93 @@ var reverseList = function (head) {
   return pre;
 };
 ```
+
+## 两两交换链表中的节点
+
+> leetcode 24
+> 虚拟头节点
+
+```js
+/**
+ * @param {ListNode} head
+ * @return {ListNode}
+ */
+var swapPairs = function (head) {
+  // 如果链表为空或者只有一个节点，直接返回原链表
+  if (!head || !head.next) {
+    return head;
+  }
+  let dummy = new ListNode(0, head);
+  let cur = dummy;
+  while (cur.next && cur.next.next) {
+    let node1 = cur.next;
+    let node2 = cur.next.next;
+    cur.next = node2;
+    node1.next = node2.next;
+    node2.next = node1;
+    cur = node1;
+  }
+  return dummy.next;
+};
+```
+
+## 删除链表倒数第 N 个节点
+
+> leetcode 19
+> 链表的单向性
+
+```js
+/**
+ * @param {ListNode} head
+ * @param {number} n
+ * @return {ListNode}
+ */
+// 思路1: 先从头到尾遍历一遍获得链表长度n, 再从头遍历到目标节点的前一位
+var removeNthFromEnd = function (head, n) {
+  // 先遍历到末尾，获得节点长度
+  let length = 0;
+  let dummy = new ListNode(0, head);
+  let cur = dummy;
+  while (cur.next) {
+    cur = cur.next;
+    length++;
+  }
+  // 遍历到倒数第n个节点的前一个节点
+  cur = dummy;
+  while (length > n) {
+    cur = cur.next;
+    length--;
+  }
+  // 此时cur指向倒数第n个节点的前一个节点
+  cur.next = cur.next.next;
+  return dummy.next;
+};
+```
+
+```js
+// 思路2: 快慢指针,先让快指针走n步,再让快慢指针一起移动,当快指针指向最后一个节点时,慢指针就时目标节点的前一位
+/**
+ * @param {ListNode} head
+ * @param {number} n
+ * @return {ListNode}
+ */
+var removeNthFromEnd = function (head, n) {
+  let dummy = new ListNode(0, head);
+  let slow = dummy;
+  let fast = dummy;
+  while (n > 0) {
+    fast = fast.next;
+    n--;
+  }
+  while (fast.next) {
+    slow = slow.next;
+    fast = fast.next;
+  }
+  slow.next = slow.next.next;
+  return dummy.next;
+};
+```
+
+## 环形链表
+
+> leetcode 142
