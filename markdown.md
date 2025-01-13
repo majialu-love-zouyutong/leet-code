@@ -431,3 +431,63 @@ var removeNthFromEnd = function (head, n) {
 ## 环形链表
 
 > leetcode 142
+> 循环链表的判断
+
+```js
+/**
+ * @param {ListNode} head
+ * @return {ListNode}
+ */
+// 暴利解法
+var detectCycle = function (head) {
+  // 如果是空链表或者只有一个节点,肯定无法成环
+  if (!head || !head.next) return null;
+  let cur = new ListNode(0);
+  cur.next = head;
+  const nodes = []; // 存储遍历过的节点
+  while (cur.next) {
+    if (nodes.includes(cur.next)) {
+      return cur.next;
+    } else {
+      nodes.push(cur.next);
+      cur = cur.next;
+    }
+  }
+  // 如果跳出了循环,说明没有成环
+  return null;
+};
+```
+
+```js
+/**
+ * @param {ListNode} head
+ * @return {ListNode}
+ */
+var detectCycle = function (head) {
+  // 边界情况直接返回
+  if (!head || !head.next) return null;
+  let fast = head;
+  let slow = head;
+  // 只需判断快指针是否出界即可
+  while (fast.next && fast.next.next) {
+    // 快指针速度为2,慢指针速度为1
+    fast = fast.next.next;
+    slow = slow.next;
+    if (fast === slow) {
+      // 两指针相遇时,让慢指针回到起点,并调整快指针速度为1,两者再次相遇的地方即为入口
+      slow = head;
+      while (slow !== fast) {
+        slow = slow.next;
+        fast = fast.next;
+      }
+      return slow;
+    }
+  }
+  // 如果没有在循环中返回结果,说明快慢指针没有相遇,说明链表没有环
+  return null;
+};
+```
+
+# 哈希表
+
+## 有效的字母异位词
