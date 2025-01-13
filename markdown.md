@@ -491,3 +491,74 @@ var detectCycle = function (head) {
 # 哈希表
 
 ## 有效的字母异位词
+
+> leetcode 242
+> 哈希表 数组 ASCII 码
+
+```js
+/**
+ * @param {string} s
+ * @param {string} t
+ * @return {boolean}
+ */
+var isAnagram = function (s, t) {
+  const hash = new Array(26).fill(0);
+  for (let i = 0; i < s.length; i++) {
+    hash[s.charCodeAt(i) - 'a'.charCodeAt(0)]++;
+  }
+  for (let i = 0; i < t.length; i++) {
+    hash[t.charCodeAt(i) - 'a'.charCodeAt(0)]--;
+  }
+  for (let i = 0; i < 26; i++) {
+    if (hash[i] !== 0) return false;
+  }
+  return true;
+};
+```
+
+## 两个数组的交集
+
+> leetcode 349
+> Set 对象
+
+```js
+/**
+ * @param {number[]} nums1
+ * @param {number[]} nums2
+ * @return {number[]}
+ */
+var intersection = function (nums1, nums2) {
+  const set1 = new Set(nums1);
+  const set2 = new Set();
+  nums2.forEach((item) => {
+    if (set1.has(item)) {
+      set2.add(item);
+    }
+  });
+  return Array.from(set2);
+};
+```
+
+## 两数之和
+
+> leetcode 1
+> map 对象
+
+```js
+/**
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number[]}
+ */
+var twoSum = function (nums, target) {
+  const map = new Map();
+  for (let i = 0; i < nums.length; i++) {
+    const value = target - nums[i];
+    if (map.has(value)) {
+      return [i, map.get(value)];
+    } else {
+      map.set(nums[i], i);
+    }
+  }
+};
+```

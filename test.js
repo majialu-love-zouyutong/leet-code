@@ -1,3 +1,1 @@
-const a = [];
-
-console.log(a[3]);
+console.log('b'-'a');
