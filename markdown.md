@@ -562,3 +562,194 @@ var twoSum = function (nums, target) {
   }
 };
 ```
+
+## 四数相加
+
+> leetcode 454
+> map
+
+```js
+/**
+ * @param {number[]} nums1
+ * @param {number[]} nums2
+ * @param {number[]} nums3
+ * @param {number[]} nums4
+ * @return {number}
+ */
+var fourSumCount = function (nums1, nums2, nums3, nums4) {
+  const map = new Map();
+  // 遍历前两个数组,将所有的和的出现次数记录到map中
+  for (let num1 of nums1) {
+    for (let num2 of nums2) {
+      const sum = num1 + num2;
+      map.set(sum, (map.get(sum) || 0) + 1);
+    }
+  }
+  let count = 0; // 计数结果
+  // 遍历后两个数组,判断其和的相反数是否在map中,如果在,则将count加上对应的value值
+  for (let num3 of nums3) {
+    for (let num4 of nums4) {
+      const target = -(num3 + num4);
+      count += map.get(target) || 0;
+    }
+  }
+  return count;
+};
+```
+
+## 三数之和
+
+> leetcode 15
+> 排序后双指针
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {number[][]}
+ */
+var threeSum = function (nums) {
+  nums = nums.sort((a, b) => a - b); // 排序
+  if (nums[0] > 0) return []; // 如果排序后最小的都大于0,则不可能有组合
+  const result = [];
+  for (let i = 0; i < nums.length - 2; i++) {
+    if (nums[i] > 0) break; // 如果第一个大于0,则不可能有组合
+    if (i > 0 && nums[i] === nums[i - 1]) continue; // 放置i对应的值重复
+    let left = i + 1;
+    let right = nums.length - 1;
+    while (left < right) {
+      let sum = nums[i] + nums[left] + nums[right];
+      if (sum > 0) right--; // 大了必须让right左移
+      else if (sum < 0) left++; // 小了必须让left右移
+      else {
+        result.push([nums[i], nums[left], nums[right]]);
+        // 跳过重复值
+        while (left < right && nums[left] === nums[left + 1]) left++;
+        while (left < right && nums[right] === nums[right - 1]) right--;
+        left++;
+        right--;
+      }
+    }
+  }
+  return result;
+};
+```
+
+## 四数之和
+
+> leetcode 18
+> 双指针
+
+```js
+/**
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number[][]}
+ */
+var fourSum = function (nums, target) {
+  const len = nums.length;
+  if (len < 4) return [];
+  const res = [];
+  nums = nums.sort((a, b) => a - b);
+  for (let i = 0; i < len - 3; i++) {
+    // 剪枝
+    if (nums[i] + nums[i + 1] + nums[i + 2] + nums[i + 3] > target) break;
+    if (nums[i] + nums[len - 3] + nums[len - 2] + nums[len - 1] < target)
+      continue;
+    // 去重
+    if (i > 0 && nums[i] === nums[i - 1]) continue;
+    for (let j = i + 1; j < len - 2; j++) {
+      // 剪枝
+      if (nums[i] + nums[j] + nums[j + 1] + nums[j + 2] > target) break;
+      if (nums[i] + nums[j] + nums[len - 2] + nums[len - 1] < target) continue;
+      // 去重
+      if (j > i + 1 && nums[j] === nums[j - 1]) continue;
+      let l = j + 1;
+      let r = len - 1;
+      while (l < r) {
+        const sum = nums[i] + nums[j] + nums[l] + nums[r];
+        if (sum > target) {
+          r--;
+        } else if (sum < target) {
+          l++;
+        } else {
+          res.push([nums[i], nums[j], nums[l], nums[r]]);
+          // 去重
+          while (l < r && nums[l] === nums[l + 1]) l++;
+          while (l < r && nums[r] === nums[r - 1]) r--;
+          l++;
+          r--;
+        }
+      }
+    }
+  }
+  return res;
+};
+```
+
+# 字符串
+
+## 反转字符串
+
+> leetcode 344
+
+```js
+/**
+ * @param {character[]} s
+ * @return {void} Do not return anything, modify s in-place instead.
+ */
+var reverseString = function (s) {
+  const len = s.length;
+  if (len < 2) {
+    return;
+  }
+  let left = 0;
+  let right = len - 1;
+  while (left < right) {
+    [s[left], s[right]] = [s[right], s[left]];
+    left++;
+    right--;
+  }
+};
+```
+
+## 反转字符串 II
+
+> lettcode 541
+
+```js
+/**
+ * @param {string} s
+ * @param {number} k
+ * @return {string}
+ */
+var reverseStr = function (s, k) {
+  // 将字符串转换为数组以便原地修改
+  const arr = s.split('');
+  for (let i = 0; i < arr.length; i += 2 * k) {
+    let left = i;
+    let right = Math.min(i + k - 1, arr.length - 1); // 确保 right 不超出数组范围
+    // 翻转 k 个字符
+    while (left < right) {
+      [arr[left], arr[right]] = [arr[right], arr[left]];
+      left++;
+      right--;
+    }
+  }
+  // 将修改后的数组转回字符串
+  return arr.join('');
+};
+```
+
+## 反转字符串里的单词
+
+> leetcode 151
+
+```js
+/**
+ * @param {string} s
+ * @return {string}
+ */
+var reverseWords = function (s) {
+  return s.replace(/\s+/g, ' ').trim().split(' ').reverse().join(' ');
+};
+```

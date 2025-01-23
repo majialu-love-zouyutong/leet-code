@@ -1,1 +1,2 @@
-console.log('b'-'a');
+const a = [1,2,3,4];
+console.log(a.reverse())
