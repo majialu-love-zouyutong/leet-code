@@ -753,3 +753,8 @@ var reverseWords = function (s) {
   return s.replace(/\s+/g, ' ').trim().split(' ').reverse().join(' ');
 };
 ```
+## KMP算法
+
+寻找文本串中是否出现过模式串.
+
+### 前缀表
