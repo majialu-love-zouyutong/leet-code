@@ -139,34 +139,38 @@ var minSubArrayLen = function (target, nums) {
  * @param {number} n
  * @return {number[][]}
  */
-var generateMatrix = function (n) {
-  const result = Array.from({ length: n }, () => new Array(n).fill(0));
-  let num = 1;
+const generateMatrix = function (n) {
+  const result = new Array(n).fill(0).map(() => new Array(n).fill(0));
   let rowBegin = 0,
     rowEnd = n - 1;
   let colBegin = 0,
     colEnd = n - 1;
+  let num = 1;
 
   while (rowBegin <= rowEnd && colBegin <= colEnd) {
     // 向右
-    for (let j = colBegin; j <= colEnd; j++) result[rowBegin][j] = num++;
+    for (let i = colBegin; i <= colEnd; i++) {
+      result[rowBegin][i] = num++;
+    }
     rowBegin++;
 
     // 向下
-    for (let i = rowBegin; i <= rowEnd; i++) result[i][colEnd] = num++;
+    for (let i = rowBegin; i <= rowEnd; i++) {
+      result[i][colEnd] = num++;
+    }
     colEnd--;
 
-    if (rowBegin <= rowEnd) {
-      // 向左
-      for (let j = colEnd; j >= colBegin; j--) result[rowEnd][j] = num++;
-      rowEnd--;
+    // 向左
+    for (let i = colEnd; i >= colBegin; i--) {
+      result[rowEnd][i] = num++;
     }
+    rowEnd--;
 
-    if (colBegin <= colEnd) {
-      // 向上
-      for (let i = rowEnd; i >= rowBegin; i--) result[i][colBegin] = num++;
-      colBegin++;
+    // 向上
+    for (let i = rowEnd; i >= rowBegin; i--) {
+      result[i][colBegin] = num++;
     }
+    colBegin++;
   }
 
   return result;
@@ -440,50 +444,61 @@ var removeNthFromEnd = function (head, n) {
  */
 // 暴利解法
 var detectCycle = function (head) {
-  // 如果是空链表或者只有一个节点,肯定无法成环
-  if (!head || !head.next) return null;
-  let cur = new ListNode(0);
-  cur.next = head;
-  const nodes = []; // 存储遍历过的节点
-  while (cur.next) {
-    if (nodes.includes(cur.next)) {
-      return cur.next;
-    } else {
-      nodes.push(cur.next);
-      cur = cur.next;
+  const visited = new Set();
+  while (head !== null) {
+    if (visited.has(head)) {
+      return head;
     }
+    visited.add(head);
+    head = head.next;
   }
-  // 如果跳出了循环,说明没有成环
   return null;
 };
 ```
 
 ```js
 /**
+ * Definition for singly-linked list.
+ * function ListNode(val) {
+ *     this.val = val;
+ *     this.next = null;
+ * }
+ */
+
+/**
  * @param {ListNode} head
  * @return {ListNode}
  */
 var detectCycle = function (head) {
-  // 边界情况直接返回
-  if (!head || !head.next) return null;
-  let fast = head;
+  // 如果链表为空,直接返回null
+  if (head === null) {
+    return null;
+  }
+  // 慢指针一次移动一格,快指针一次移动两格
   let slow = head;
-  // 只需判断快指针是否出界即可
-  while (fast.next && fast.next.next) {
-    // 快指针速度为2,慢指针速度为1
-    fast = fast.next.next;
+  let fast = head;
+  while (fast !== null) {
     slow = slow.next;
+    if (fast.next !== null) {
+      fast = fast.next.next;
+    } else {
+      // 如果快指针到了null,说明肯定无环
+      return null;
+    }
     if (fast === slow) {
-      // 两指针相遇时,让慢指针回到起点,并调整快指针速度为1,两者再次相遇的地方即为入口
-      slow = head;
-      while (slow !== fast) {
+      // 相遇的位置
+      // x = z + (n - 1)(y+z)
+      // 所以让一个指针从链表头开始,另一个从相遇点开始,速度
+      // 均为1
+      // 当两个指针再次相遇时,就是环的入口
+      let ptr = head;
+      while (ptr !== slow) {
+        ptr = ptr.next;
         slow = slow.next;
-        fast = fast.next;
       }
-      return slow;
+      return ptr;
     }
   }
-  // 如果没有在循环中返回结果,说明快慢指针没有相遇,说明链表没有环
   return null;
 };
 ```
@@ -753,8 +768,555 @@ var reverseWords = function (s) {
   return s.replace(/\s+/g, ' ').trim().split(' ').reverse().join(' ');
 };
 ```
-## KMP算法
+
+## KMP 算法
 
 寻找文本串中是否出现过模式串.
 
+举例:
+
+- 文本串: aabaabaaf
+- 模式串: aabaaf
+
 ### 前缀表
+
+- **前缀**: 包含首字母, 不包含尾字母的所有子串
+- **后缀**: 包含尾字母, 不包含首字母的所有子串
+
+最长相等前后缀
+
+举例:
+
+| 字符串 | 最长相等前后缀 |                   备注                    |
+| :----: | :------------: | :---------------------------------------: |
+|   a    |       0        |       a 只有一个字母,没有前缀和后缀       |
+|   aa   |       1        | aa 有两个字母,只有一个前缀和后缀 a,且相等 |
+|  aab   |       0        |       aab 的后缀中还有 b,前缀中没有       |
+|  aaba  |       1        |         aaba 有一个相等的前后缀 a         |
+| aabaa  |       2        |     aabaa 有两个相等的前后缀 a 和 aa      |
+| aabaaf |       0        |      aabaaf 中后缀含有 f,前缀中没有       |
+
+## 具体实现
+
+```js
+const str = 'aabaacaaf';
+
+const kmp = 'aabaaf';
+
+function getNextArr(s) {
+  const next = new Array(s.length).fill(0); // 初始化数组
+  let j = 0; // 前缀末尾指针,也代表当前最长相等的前后缀长度
+
+  for (let i = 1; i < s.length; i++) {
+    // 前后缀不同时回退
+    while (j > 0 && s[i] !== s[j]) {
+      j = next[j - 1]; // 核心回退操作
+    }
+
+    // 找到相同的前后缀
+    if (s[i] === s[j]) {
+      j++;
+    }
+
+    // 更新next数组
+    next[i] = j;
+  }
+  return next;
+}
+
+// KMP算法实现
+function kmpSearch(text, pattern) {
+  const next = getNextArr(pattern); // 获取模式串的next数组
+  let j = 0; // 模式串的指针
+
+  // 遍历文本串
+  for (let i = 0; i < text.length; i++) {
+    // 当字符不匹配时，根据next数组回退模式串的指针
+    while (j > 0 && text[i] !== pattern[j]) {
+      j = next[j - 1];
+    }
+
+    // 字符匹配时，移动模式串指针
+    if (text[i] === pattern[j]) {
+      j++;
+    }
+
+    // 如果模式串完全匹配，返回匹配的起始位置
+    if (j === pattern.length) {
+      return i - pattern.length + 1;
+    }
+  }
+
+  // 未找到匹配，返回-1
+  return -1;
+}
+
+// 测试KMP算法
+const result = kmpSearch(str, kmp);
+console.log(result); // 输出匹配的起始位置
+```
+
+## 重复的子字符串
+
+> leetcode 459
+
+# 动态规划
+
+## 理论基础
+
+### 常见类型
+
+- 动规基础
+- 背包问题
+- 打家劫舍
+- 股票问题
+- 子序列问题
+
+### 动态规划误区
+
+不要沉浸于具体的状态转移方程,而是掌握解题步骤.
+
+### DP 数组的含义
+
+- 搞清楚 dp 数组以及下标的含义
+
+### 递推公(状态转移方程)
+
+如何找到递推公式
+
+### DP 数组初始化
+
+如何初始化 DP 数组
+
+### DP 数组遍历顺序
+
+如何选择合适的遍历顺序
+
+### 打印 DP 数组
+
+在 Debug 的时候多打印 DP 数组,对应其含义.
+
+### 动态规划五部曲
+
+- DP 数组的含义
+- 递推公式
+- DP 数组初始化
+- DP 数组遍历顺序
+- 打印 DP 数组
+
+## 斐波那契数列
+
+> leetcode 509.
+
+```js
+/**
+ * @param {number} n
+ * @return {number}
+ */
+var fib = function (n) {
+  if (n === 0) return 0;
+  if (n === 1) return 1;
+  // 动规五部曲
+  // 1. 确定dp数组及其下标的含义,dp[i]表示第i个斐波那契数列的值
+  // 2. 递推公式: dp[i] = dp[i-1] + dp[i-2]
+  // 3. 初始化dp数组
+  const dp = [];
+  dp[0] = 0;
+  dp[1] = 1;
+  // 4. 遍历dp数组
+  for (let i = 2; i <= n; i++) {
+    dp[i] = dp[i - 1] + dp[i - 2];
+  }
+  // 5. 打印dp数组调试
+  // 返回
+  return dp[n];
+};
+```
+
+## 爬楼梯
+
+> leetcode 70
+
+```js
+/**
+ * @param {number} n
+ * @return {number}
+ */
+var climbStairs = function (n) {
+  // 1. dp数组含义: dp[i]表示有爬到第i阶的方法总数
+  // 2. 状态转移方程: dp[i] = dp[i-2] + dp[i-1]
+  // 3. dp数组初始化: dp[1] = 1, dp[2] = 2;
+  const dp = [];
+  dp[1] = 1;
+  dp[2] = 2;
+  // 4. dp数组遍历: 从前往后遍历
+  for (let i = 3; i <= n; i++) {
+    dp[i] = dp[i - 1] + dp[i - 2];
+  }
+  return dp[n];
+  // 5. dp数组打印调试
+};
+```
+
+## 使用最小花费爬楼梯
+
+> leetcode 746
+
+```js
+/**
+ * @param {number[]} cost
+ * @return {number}
+ */
+var minCostClimbingStairs = function (cost) {
+  // 1. dp数组的含义
+  // dp[i]表示到达下标i的位置所需花费的最小值
+  // 2. 状态转移方程
+  // dp[i] = Math.min((dp[i-1] + cost[i-1]),(dp[i-2] + cost[i-2]))
+  // 3. dp数组初始化
+  const dp = [];
+  dp[0] = 0;
+  dp[1] = 0;
+  // 4. dp数组遍历
+  for (let i = 2; i <= cost.length; i++) {
+    dp[i] = Math.min(dp[i - 1] + cost[i - 1], dp[i - 2] + cost[i - 2]);
+  }
+  return dp[cost.length];
+  // 5. 打印调试
+};
+```
+
+```js
+// 优化空间复杂度
+
+/**
+ * @param {number[]} cost
+ * @return {number}
+ */
+var minCostClimbingStairs = function (cost) {
+  // 1. dp[i]表示达到i处的最小花费
+  // 2. dp[i] = Math.min((dp[i-1] + cost[i-1]),(dp[i-2]+cost[i-2]))
+  let front = 0;
+  let mid = 0;
+  let end;
+  for (let i = 2; i <= cost.length; i++) {
+    end = Math.min(mid + cost[i - 1], front + cost[i - 2]);
+    front = mid;
+    mid = end;
+  }
+  return end;
+};
+```
+
+## 不同路径
+
+> leetcode 62
+
+```js
+/**
+ * @param {number} m
+ * @param {number} n
+ * @return {number}
+ */
+var uniquePaths = function (m, n) {
+  // 1. dp[i][j]表示从start到i,j的不同路径数
+  // 2. dp[i][j] = dp[i-1][j] + dp[i][j-1]
+  // 3. 初始化dp数组
+  const dp = new Array(m).fill(0).map(() => new Array(n).fill(0));
+  for (let j = 0; j < n; j++) {
+    dp[0][j] = 1;
+  }
+  for (let i = 0; i < m; i++) {
+    dp[i][0] = 1;
+  }
+  // 4. 遍历dp数组
+  for (let i = 1; i < m; i++) {
+    for (let j = 1; j < n; j++) {
+      dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+    }
+  }
+  return dp[m - 1][n - 1];
+};
+```
+
+```js
+// 优化空间复杂度
+/**
+ * @param {number} m
+ * @param {number} n
+ * @return {number}
+ */
+var uniquePaths = function (m, n) {
+  // dp[j]同时表示dp[i-1][j]和dp[i][j]
+  const dp = new Array(n).fill(1);
+
+  // 递推公式dp[j] = dp[j-1] + dp[j] 这里的dp[j-1]就是已经更新后的左边的值,dp[j]是尚未更新的上面的值
+  for (let i = 1; i < m; i++) {
+    for (let j = 1; j < n; j++) {
+      dp[j] += dp[j - 1];
+    }
+  }
+  return dp[n - 1];
+};
+```
+
+## 不同路径 II
+
+> leetcode 63
+
+```js
+/**
+ * @param {number[][]} obstacleGrid
+ * @return {number}
+ */
+var uniquePathsWithObstacles = function (obstacleGrid) {
+  // dp[i][j]表示达到i,j的不同路径数
+  /**
+   *   if obstacleGrid[i][j] === 1, dp[i][j] = 0
+   *   else dp[i][j] = d[i-1][j] + dp[i][j-1]
+   */
+  const m = obstacleGrid.length;
+  const n = obstacleGrid[0].length;
+  const dp = new Array(m).fill(0).map(() => new Array(n).fill(0));
+
+  for (let j = 0; j < n && obstacleGrid[0][j] === 0; j++) {
+    dp[0][j] = 1;
+  }
+  for (let i = 0; i < m && obstacleGrid[i][0] === 0; i++) {
+    dp[i][0] = 1;
+  }
+  for (let i = 1; i < m; i++) {
+    for (let j = 1; j < n; j++) {
+      if (obstacleGrid[i][j] === 1) {
+        dp[i][j] = 0;
+      } else {
+        dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+      }
+    }
+  }
+  return dp[m - 1][n - 1];
+};
+```
+
+```js
+// 优化空间复杂度
+var uniquePathsWithObstacles = function (obstacleGrid) {
+  const m = obstacleGrid.length;
+  const n = obstacleGrid[0].length;
+  const dp = new Array(n).fill(0);
+
+  // 初始化第一行
+  dp[0] = obstacleGrid[0][0] === 1 ? 0 : 1;
+  for (let j = 1; j < n; j++) {
+    dp[j] = obstacleGrid[0][j] === 0 && dp[j - 1] === 1 ? 1 : 0;
+  }
+
+  for (let i = 1; i < m; i++) {
+    // 处理当前行首列
+    dp[0] = obstacleGrid[i][0] === 1 ? 0 : dp[0];
+
+    for (let j = 1; j < n; j++) {
+      if (obstacleGrid[i][j] === 1) {
+        dp[j] = 0;
+      } else {
+        dp[j] += dp[j - 1];
+      }
+    }
+  }
+  return dp[n - 1];
+};
+```
+
+## 整数拆分
+
+> leetcode 343
+
+```js
+/**
+ * @param {number} n
+ * @return {number}
+ */
+var integerBreak = function (n) {
+  // dp[i]表示对i进行拆分得到的最大乘积
+  // dp[i] = max(j * dp[i-j]),j=1,2...i-1;
+  const dp = new Array(n + 1).fill(0);
+  dp[2] = 1;
+  for (let i = 3; i <= n; i++) {
+    for (let j = 1; j < i; j++) {
+      dp[i] = Math.max(dp[i], j * dp[i - j], j * (i - j));
+    }
+  }
+  return dp[n];
+};
+```
+
+## TODO: 不同的二叉搜索树
+
+> leetcode 96
+
+## 0-1 背包问题理论基础
+
+### 背包问题概述
+
+- 0-1 背包: 有 n 种物品,每种物品只有一个,每个物品有自己的重量和价值,问最多价值
+- 完全背包
+- 多重背包
+
+### 背包的暴力解法
+
+|  维度  | 重量 | 价值 |
+| :----: | :--: | :--: |
+| 物品 0 |  1   |  15  |
+| 物品 1 |  3   |  20  |
+| 物品 2 |  4   |  30  |
+
+背包的最大重量为 4
+
+```js
+// 1. dp数组的含义
+// dp[i][j]表示下标为[0,i]的物品任取,放入重量为j的背包中所能得的最大价值
+// 2. 递推公式
+// dp[i][j] = Math.max(dp[i-1][j],dp[i-1][j-weight[i]] + value[i])
+// 如果放物品i,则dp[i][j] = dp[i-1][j-weight[i]] + value[i]
+// 如果不放物品i,则dp[i][j] = dp[i-1][j]
+// 3. 初始化dp数组
+// dp[0][j] = 0;
+// dp[i][0] = j > weight[i] ? value[i] : 0;
+// 4. 遍历dp数组
+// 在使用二维数组的时候,既可以先遍历i,也可以先遍历j
+```
+
+```js
+const rl = require('readline').createInterface({
+  input: process.stdin,
+});
+
+var iter = rl[Symbol.asyncIterator]();
+
+const readline = async () => (await iter.next()).value;
+
+void (async function () {
+  const [n, bagWeight] = (await readline()).split(' ').map(Number);
+  const weight = (await readline()).split(' ').map(Number);
+  const value = (await readline()).split(' ').map(Number);
+
+  // dp[i][j]表示从0到i的背包任选,放入容量为j的背包,所能有的最大价值
+  // dp[i][j] = Math.max(dp[i-1][j], dp[i-1][j-weight[i]] + value[i])
+  // 初始化dp[0][j]如果j > weight[0],dp[i][j]=value[0],
+  // dp[i][0] = 0
+  // 遍历都可以
+  const dp = new Array(n).fill(0).map(() => new Array(bagWeight + 1).fill(0));
+
+  for (let j = weight[0]; j <= bagWeight; j++) {
+    dp[0][j] = value[0];
+  }
+
+  for (let i = 1; i < n; i++) {
+    for (let j = 1; j <= bagWeight; j++) {
+      if (j < weight[i]) {
+        dp[i][j] = dp[i - 1][j];
+      } else {
+        dp[i][j] = Math.max(dp[i - 1][j], dp[i - 1][j - weight[i]] + value[i]);
+      }
+    }
+  }
+  console.log(dp[n - 1][bagWeight]);
+})();
+```
+
+## 0-1 背包问题滚动数组优化
+
+> 这里注意一定要从后往前遍历,否则会出错(因为要从后往前会读取到新值,而不是旧值 )
+
+```js
+const rl = require('readline').createInterface({
+  input: process.stdin,
+});
+
+var iter = rl[Symbol.asyncIterator]();
+
+const readline = async () => (await iter.next()).value;
+
+void (async function () {
+  const [n, bagWeight] = (await readline()).split(' ').map(Number);
+  const weight = (await readline()).split(' ').map(Number);
+  const value = (await readline()).split(' ').map(Number);
+  // dp[j]表示容量为j的背包最大价值
+  const dp = new Array(bagWeight + 1).fill(0);
+  for (let i = 0; i < n; i++) {
+    for (let j = bagWeight; j > 0; j--) {
+      if (j >= weight[i]) {
+        dp[j] = Math.max(dp[j], dp[j - weight[i]] + value[i]);
+      }
+    }
+  }
+  console.log(dp[bagWeight]);
+})();
+```
+
+## 分割等和子集
+
+> leetcode 416
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {boolean}
+ */
+var canPartition = function (nums) {
+  const sum = nums.reduce((a, b) => a + b, 0);
+  if (sum % 2 !== 0) return false;
+  const target = sum / 2;
+  // dp[j]表示从0-i任选,能否组成j
+  // dp[j] = dp[j] || dp[j-nums[i]]
+  const dp = new Array(target + 1).fill(true);
+  // dp[0] = true;
+  for (let j = 1; j <= target; j++) {
+    if (nums[0] !== j) {
+      dp[j] = false;
+    }
+  }
+  for (let i = 1; i < nums.length; i++) {
+    for (let j = target; j > 0; j--) {
+      if (nums[i] < j) {
+        dp[j] = dp[j] || dp[j - nums[i]];
+      }
+    }
+    // if (dp[target]) return true;
+  }
+  return dp[target];
+};
+```
+
+## 最后一块石头的重量 II
+
+> leetcode 1049
+
+```js
+/**
+ * @param {number[]} stones
+ * @return {number}
+ */
+var lastStoneWeightII = function (stones) {
+  const sum = stones.reduce((a, b) => a + b, 0);
+  const target = Math.floor(sum / 2);
+  const dp = new Array(target + 1).fill(true);
+  // dp[j] 表示能否组成j
+  for (let j = 1; j <= target; j++) {
+    if (stones[0] !== j) {
+      dp[j] = false;
+    }
+  }
+  for (let i = 1; i < stones.length; i++) {
+    for (let j = target; j > 0; j--) {
+      if (stones[i] <= j) {
+        dp[j] = dp[j] || dp[j - stones[i]];
+      }
+    }
+  }
+  for (let j = target; ; j--) {
+    if (dp[j]) {
+      return sum - 2 * j;
+    }
+  }
+};
+```
