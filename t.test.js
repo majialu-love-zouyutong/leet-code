@@ -1,4 +1,4 @@
-const {quickSort} = require('./t.js');
+const { quickSort } = require('./t.js');
 
 describe('quickSort', () => {
   test('应按升序对数字数组进行排序', () => {
