@@ -1,38 +1,19 @@
-const { quickSort } = require('./t.js');
+const threeSum = require('./t.js');
 
-describe('quickSort', () => {
-  test('应按升序对数字数组进行排序', () => {
-    const arr = [3, 6, 8, 10, 1, 2, 1];
-    const sortedArr = [1, 1, 2, 3, 6, 8, 10];
-    quickSort(arr);
-    expect(arr).toEqual(sortedArr);
-  });
+test('测试三数之和，处理重复元素', () => {
+  // 测试用例1：包含重复元素，但结果不应有重复三元组
+  const nums1 = [-1, 0, 1, 2, -1, -4];
+  expect(threeSum(nums1)).toEqual([[-1, -1, 2], [-1, 0, 1]]);
 
-  test('应处理空数组', () => {
-    const arr = [];
-    const sortedArr = [];
-    quickSort(arr);
-    expect(arr).toEqual(sortedArr);
-  });
+  // 测试用例2：所有元素相同，但结果应为空数组
+  const nums2 = [0, 0, 0, 0];
+  expect(threeSum(nums2)).toEqual([[0, 0, 0]]);
 
-  test('应处理只有一个元素的数组', () => {
-    const arr = [5];
-    const sortedArr = [5];
-    quickSort(arr);
-    expect(arr).toEqual(sortedArr);
-  });
+  // 测试用例3：包含多个重复元素，但结果不应有重复三元组
+  const nums3 = [-2, 0, 0, 2, 2];
+  expect(threeSum(nums3)).toEqual([[-2, 0, 2]]);
 
-  test('应处理所有元素相同的数组', () => {
-    const arr = [7, 7, 7, 7];
-    const sortedArr = [7, 7, 7, 7];
-    quickSort(arr);
-    expect(arr).toEqual(sortedArr);
-  });
-
-  test('应处理包含负数的数组', () => {
-    const arr = [-3, -1, -4, -2];
-    const sortedArr = [-4, -3, -2, -1];
-    quickSort(arr);
-    expect(arr).toEqual(sortedArr);
-  });
+  // 测试用例4：无解的情况
+  const nums4 = [1, 2, 3, 4];
+  expect(threeSum(nums4)).toEqual([]);
 });

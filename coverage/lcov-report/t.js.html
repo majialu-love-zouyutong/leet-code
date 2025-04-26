@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>35/35</span>
+                <span class='fraction'>40/40</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>7/7</span>
+                <span class='fraction'>15/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/2</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>35/35</span>
+                <span class='fraction'>40/40</span>
             </div>
         
             
@@ -98,84 +98,96 @@
 <a name='L33'></a><a href='#L33'>33</a>
 <a name='L34'></a><a href='#L34'>34</a>
 <a name='L35'></a><a href='#L35'>35</a>
-<a name='L36'></a><a href='#L36'>36</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-yes">8x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">25x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">25x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const partition = (arr, left, right) =&gt; {
-  // 保存枢轴元素
-  const pivot = arr[left];
-  while (left &lt; right) {
-    // 移动右指针
-    while (left &lt; right &amp;&amp; arr[right] &gt;= pivot) {
-      right--;
+<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">/**
+ * @param {number[]} nums
+ * @return {number[][]}
+ */
+var threeSum = function (nums) {
+  // 结果数组
+  const result = [];
+  // 排序
+  nums.sort((a, b) =&gt; a - b);
+  // 遍历第一个数,到倒数第三个为止
+  for (let i = 0; i &lt; nums.length - 2; i++) {
+    // 如果该数已经大于零,直接剪枝
+    if (nums[i] &gt; 0) break;
+    // 如果和前一个相同,则跳过本次循环
+    if (i &gt; 0 &amp;&amp; nums[i] === nums[i - 1]) continue;
+    // 双指针
+    let left = i + 1;
+    let right = nums.length - 1;
+    while (left &lt; right) {
+      const sum = nums[i] + nums[left] + nums[right];
+      if (sum === 0) {
+        result.push([nums[i], nums[left], nums[right]]);
+        // 移动指针
+        left++;
+        right--;
+        // 去重两指针
+        while (nums[left] === nums[left - 1]) left++;
+        while (nums[right] === nums[right + 1]) right--;
+      } else if (sum &lt; 0) {
+        left++;
+      } else {
+        right--;
+      }
     }
-    // 放置元素
-    arr[left] = arr[right];
-    // 移动左指针
-    while (left &lt; right &amp;&amp; arr[left] &lt;= pivot) {
-      left++;
-    }
-    // 放置元素
-    arr[right] = arr[left];
   }
-  // 左右指针重合位置就是枢轴元素最终位置
-  arr[left] = pivot;
-  return left;
+  return result;
 };
-&nbsp;
-const quickSort = (arr, left = 0, right = arr.length - 1) =&gt; {
-  if (left &lt; right) {
-    const pivot = partition(arr, left, right);
-    // 排序左子序列
-    quickSort(arr, left, pivot - 1);
-    // 排序右子序列
-    quickSort(arr, pivot + 1, right);
-  }
-};
-&nbsp;
-module.exports = {
-  quickSort,
-};
-&nbsp;</pre></td></tr></table></pre>
+module.exports = threeSum;
+const result = threeSum([0,1,1,1,-1,-1,-1]);
+console.log(result);</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-03-21T02:07:28.594Z
+                at 2025-03-21T03:12:21.906Z
             </div>
         <script src="prettify.js"></script>
         <script>
